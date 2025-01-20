@@ -57,7 +57,6 @@ class MeshyAIResultIDView(APIView):
 
 
 class MeshyAIDownloadView(APIView):
-    """Handles downloading the .glb file using the result_id."""
     AUTHORIZATION_KEY = os.getenv("MESHY_API_KEY")  
 
     def get(self, request, result_id):
