@@ -66,33 +66,25 @@ class MeshyAIDownloadView(APIView):
         }
 
         try:
-            # Endpoint to fetch the model details
             download_url = f"https://api.meshy.ai/openapi/v1/image-to-3d/{result_id}"
 
-            # Make a request to fetch the model details
             response = requests.get(download_url, headers=headers)
             response.raise_for_status()
 
-            # Parse the JSON response
             data = response.json()
 
-            # Extract the .glb download URL from the model_urls field
             model_url = data.get("model_urls", {}).get("glb")
             if not model_url:
                 return Response({"error": "GLB model URL not found."}, status=status.HTTP_404_NOT_FOUND)
 
-            # Download the .glb file using the extracted URL
             file_response = requests.get(model_url, stream=True)
             file_response.raise_for_status()
 
-            # Prepare file path to save the .glb file
             file_name = f"{result_id}.glb"  
             save_path = os.path.join(settings.MEDIA_ROOT, "3DModel", file_name)
 
-            # Create directory if it doesn't exist
             os.makedirs(os.path.dirname(save_path), exist_ok=True)  
 
-            # Write the downloaded content to the file
             with open(save_path, "wb") as file:
                 for chunk in file_response.iter_content(chunk_size=8192):
                     file.write(chunk)
